@@ -2,27 +2,28 @@
 pub struct Framebuffer
 {
     buffer: Vec<u32>,
-    width: u64,
-    height: u64
+    width: usize,
+    height: usize
 }
 
 impl Framebuffer
 {
-    pub fn new(buffer: Vec<u32>, width: u64, height: u64) -> Self
-    {
+    pub fn new(width: usize, height: usize) -> Self
+    {    let mut buffer: Vec<u32> = vec![0; width * height];
+
         Framebuffer{buffer, width, height}
     }
 
-    pub fn get_color_at(&self, x_coord: &u64, y_coord: &u64) -> &u32
+    pub fn get_color_at(&self, x_coord: &u32, y_coord: &u32) -> &u32
     {
-        &self.buffer[((x_coord+(y_coord*self.width) ) as usize)]
+        &self.buffer[((x_coord+(y_coord*self.width as u32 ) ) as usize)]
     }
     
-    pub fn set_color_at(&mut self, x_coord: &u64, y_coord: &u64, color: u32)
+    pub fn set_color_at(&mut self, x_coord: &u32, y_coord: &u32, color: u32)
     {
-        if(*y_coord<self.height && *x_coord<self.width) && ((x_coord+(y_coord*self.width) )) < (self.buffer.len() as u64)
+        if(*y_coord<self.height as u32 && *x_coord<self.width as u32 ) && ((x_coord+(y_coord*self.width as u32 ) )) < (self.buffer.len() as u32)
         {
-            self.buffer[(x_coord+(y_coord*self.width) ) as usize] = color;
+            self.buffer[(x_coord+(y_coord*self.width as u32 ) ) as usize] = color;
         }
     }
     
