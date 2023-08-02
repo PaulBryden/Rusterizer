@@ -21,22 +21,16 @@ jobs:
     - name: Change_dir
       run: cd examples/web
     - name: Build
-      run: wasm-pack build --target web --out-name req_anim_frame.wasm -- --features web --no-default-features
+      run: cd examples/web && wasm-pack build --target web --out-name req_anim_frame.wasm -- --features web --no-default-features
     - name: make_deploy_dir
-      run: mkdir deploy    
-    - name: copy_index_html
-      run: cp src/index.html deploy/.
-    - name: copy_js
-      run: cp pkg/req_anim_frame.wasm deploy/req_anim_frame.wasm_bg.wasm
-    - name: copy_wasm_module
-      run: cp pkg/req_anim_frame.js deploy/.
+      run: cd examples/web && mkdir deploy && cp src/index.html deploy/. && cp pkg/req_anim_frame.wasm deploy/req_anim_frame.wasm_bg.wasm && cp pkg/req_anim_frame.js deploy/.
     - name: Setup Pages
       id: pages
       uses: actions/configure-pages@v3
     - name: Build with Jekyll
       uses: actions/jekyll-build-pages@v1
       with:
-        source: ./deploy
+        source: ./examples/web/deploy
         destination: ./_site
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
