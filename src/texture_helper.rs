@@ -11,7 +11,14 @@ pub fn get_texture_from_bmp(bmp_bytes: &[u8]) ->  Texture
      let mut max_y = 0;
      for Pixel(position, color) in bmp.pixels() {
         let (r, g, b) = (color.r() as u32, color.g() as u32, color.b() as u32);
-        texture.pixels.push((r << 16) | (g << 8) | b);
+        #[cfg(feature = "web")]
+        {
+            texture.pixels.push((0xff)<< 24 | (b << 16) | (g << 8) | r); //ABGR little endian going from WASM to JS
+        }
+        #[cfg(not(feature = "web"))]
+        {
+            texture.pixels.push((0xff)<< 24 | (r << 16) | (g << 8) | b); //ARGB
+        }
         max_x=max_x.max(position.x);
         max_y=max_y.max(position.y);
     }
