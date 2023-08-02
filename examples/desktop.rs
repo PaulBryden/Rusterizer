@@ -34,27 +34,27 @@ fn main() {
         let time_elapsed = elapsed_time.as_secs_f32();
 
         //Get Control Inputs
-        if(window.is_key_down(Key::Up))
+        if window.is_key_down(Key::Up)
         {
             renderer.translate_camera_y(8.0*time_elapsed);
         }
-        if(window.is_key_down(Key::Down))
+        if window.is_key_down(Key::Down)
         {
             renderer.translate_camera_y(-8.0*time_elapsed);
         }
-        if(window.is_key_down(Key::W))
+        if window.is_key_down(Key::W)
         {
             renderer.translate_camera_forward(8.0, time_elapsed);
         }
-        if(window.is_key_down(Key::S))
+        if window.is_key_down(Key::S)
         {
             renderer.translate_camera_backward(8.0, time_elapsed);
         }
-        if(window.is_key_down(Key::A))
+        if window.is_key_down(Key::A)
         {
             renderer.translate_yaw(-2.0*time_elapsed);
         }
-        if(window.is_key_down(Key::D))
+        if window.is_key_down(Key::D)
         {
             renderer.translate_yaw(2.0*time_elapsed);
         }

@@ -10,7 +10,7 @@ use wasm_bindgen::JsCast;
 use lazy_static::lazy_static;
 use rusterizer::framebuffer::Framebuffer;
 use rusterizer::geometry::Mesh;
-use minifb::{Key};
+use minifb::Key;
 use rusterizer::renderer::Renderer;
 use rusterizer::texture_helper::get_texture_from_bmp;
 use web_sys::console;

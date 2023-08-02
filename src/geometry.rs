@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, fs::read_to_string};
+use std::f32::consts::PI;
 
 #[derive(Debug, Clone)]
 pub struct Vec3d {
@@ -53,19 +53,13 @@ pub struct Mat4x4 {
 }
 
 impl Mesh<'_> {
-    pub fn new<'a>(tex: &'a Texture, file: &'a [u8]) -> Mesh<'a>
-    {
-        let mut mesh = Mesh{tris:Vec::new(), texture:tex};
+    pub fn new<'a>(tex: &'a Texture, file: &'a [u8]) -> Mesh<'a> {
+        let mut mesh = Mesh {
+            tris: Vec::new(),
+            texture: tex,
+        };
         mesh.load_from_object_file(file, true);
         mesh
-    }
-
-    fn read_lines(filename: &str) -> Vec<String> {
-        let mut result = Vec::new();
-        for line in read_to_string(filename).unwrap().lines() {
-            result.push(line.to_string())
-        }
-        result
     }
 
     fn read_lines_from_file(file: &[u8]) -> Vec<String> {
@@ -81,8 +75,8 @@ impl Mesh<'_> {
         let mut texs: Vec<Vec2d> = Vec::new();
         let lines = Self::read_lines_from_file(file);
         for line in lines {
-            if (line.starts_with("v ")) {
-                let mut parts = line.split(" ");
+            if line.starts_with("v ") {
+                let mut parts = line.split(' ');
                 let mut vert: Vec3d = Vec3d::default();
                 parts.next();
                 vert.x = parts.next().unwrap().parse::<f32>().unwrap();
@@ -90,17 +84,17 @@ impl Mesh<'_> {
                 vert.z = parts.next().unwrap().parse::<f32>().unwrap();
                 verts.push(vert);
             }
-            if (line.starts_with("vt")) {
-                let mut parts = line.split(" ");
+            if line.starts_with("vt") {
+                let mut parts = line.split(' ');
                 let mut vert: Vec2d = Vec2d::default();
                 parts.next();
                 vert.u = parts.next().unwrap().parse::<f32>().unwrap();
                 vert.v = parts.next().unwrap().parse::<f32>().unwrap();
                 texs.push(vert);
             }
-            if (!b_has_texture) {
-                if (line.starts_with("f ")) {
-                    let mut parts = line.split(" ");
+            if !b_has_texture {
+                if line.starts_with("f ") {
+                    let mut parts = line.split(' ');
                     let mut f: [usize; 3] = [0, 0, 0];
                     parts.next();
                     f[0] = parts.next().unwrap().parse::<usize>().unwrap();
@@ -115,33 +109,31 @@ impl Mesh<'_> {
                         ..Default::default()
                     })
                 }
-            } else {
-                if (line.starts_with("f ")) {
-                    let mut parts = line.split(" ");
-                    let mut f: [usize; 3] = [0, 0, 0];
-                    let mut textoks: [usize; 3] = [0, 0, 0];
-                    parts.next();
-                    let mut counter: usize = 0;
-                    for i in parts {
-                        let mut vec_comps = i.split("/");
-                        f[counter] = vec_comps.next().unwrap().parse::<usize>().unwrap();
-                        textoks[counter] = vec_comps.next().unwrap().parse::<usize>().unwrap();
-                        counter += 1;
-                    }
-                    self.tris.push(Triangle {
-                        points: [
-                            verts[f[0] - 1].clone(),
-                            verts[f[1] - 1].clone(),
-                            verts[f[2] - 1].clone(),
-                        ],
-                        texture_points: [
-                            texs[textoks[0] - 1].clone(),
-                            texs[textoks[1] - 1].clone(),
-                            texs[textoks[2] - 1].clone(),
-                        ],
-                        ..Default::default()
-                    })
+            } else if line.starts_with("f ") {
+                let mut parts = line.split(' ');
+                let mut f: [usize; 3] = [0, 0, 0];
+                let mut textoks: [usize; 3] = [0, 0, 0];
+                parts.next();
+                let mut counter: usize = 0;
+                for i in parts {
+                    let mut vec_comps = i.split('/');
+                    f[counter] = vec_comps.next().unwrap().parse::<usize>().unwrap();
+                    textoks[counter] = vec_comps.next().unwrap().parse::<usize>().unwrap();
+                    counter += 1;
                 }
+                self.tris.push(Triangle {
+                    points: [
+                        verts[f[0] - 1].clone(),
+                        verts[f[1] - 1].clone(),
+                        verts[f[2] - 1].clone(),
+                    ],
+                    texture_points: [
+                        texs[textoks[0] - 1].clone(),
+                        texs[textoks[1] - 1].clone(),
+                        texs[textoks[2] - 1].clone(),
+                    ],
+                    ..Default::default()
+                })
             }
         }
     }
@@ -263,7 +255,7 @@ pub fn matrix_point_at(pos: &Vec3d, target: &Vec3d, up: &Vec3d) -> Mat4x4 {
     matrix.m[3][1] = pos.y;
     matrix.m[3][2] = pos.z;
     matrix.m[3][3] = 1.0;
-    return matrix;
+    matrix
 }
 
 pub fn matrix_quick_inverse(m: &Mat4x4) -> Mat4x4 {
@@ -287,7 +279,7 @@ pub fn matrix_quick_inverse(m: &Mat4x4) -> Mat4x4 {
     matrix.m[3][2] =
         -(m.m[3][0] * matrix.m[0][2] + m.m[3][1] * matrix.m[1][2] + m.m[3][2] * matrix.m[2][2]);
     matrix.m[3][3] = 1.0;
-    return matrix;
+    matrix
 }
 
 pub fn vector_add(v1: &Vec3d, v2: &Vec3d) -> Vec3d {
@@ -323,7 +315,7 @@ pub fn vector_div(v1: &Vec3d, k: f32) -> Vec3d {
 }
 
 pub fn vector_dot_product(v1: &Vec3d, v2: &Vec3d) -> f32 {
-    (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z)
+    v1.x * v2.x + v1.y * v2.y + v1.z * v2.z
 }
 pub fn vector_length(v1: &Vec3d) -> f32 {
     vector_dot_product(v1, v1).sqrt()
@@ -348,83 +340,78 @@ pub fn vector_cross_product(v1: &Vec3d, v2: &Vec3d) -> Vec3d {
 }
 
 pub fn dist(p: &Vec3d, plane_n: &Vec3d, plane_p: &Vec3d) -> f32 {
-    let n: Vec3d = vector_normalize(p);
-    return (plane_n.x * p.x + plane_n.y * p.y + plane_n.z * p.z
-        - vector_dot_product(plane_n, plane_p));
+    let _n: Vec3d = vector_normalize(p);
+    plane_n.x * p.x + plane_n.y * p.y + plane_n.z * p.z - vector_dot_product(plane_n, plane_p)
 }
 
-
 pub fn triangle_clip_against_plane(
-    plane_p: & Vec3d,
-    plane_n_input: & Vec3d,
+    plane_p: &Vec3d,
+    plane_n_input: &Vec3d,
     in_tri: &Triangle,
     out_tri1: &mut Triangle,
     out_tri2: &mut Triangle,
 ) -> u64 {
-    let mut plane_n: Vec3d = vector_normalize(&plane_n_input);
+    let mut plane_n: Vec3d = vector_normalize(plane_n_input);
 
     let mut inside_points: [Vec3d; 3] = [Vec3d::default(), Vec3d::default(), Vec3d::default()];
-    let mut nInsidePointCount: i32 = 0;
+    let mut n_inside_point_count: i32 = 0;
 
     let mut outside_points: [Vec3d; 3] = [Vec3d::default(), Vec3d::default(), Vec3d::default()];
-    let mut nOutsidePointCount: i32 = 0;
+    let mut n_outside_point_count: i32 = 0;
 
     let mut inside_tex: [Vec2d; 3] = [Vec2d::default(), Vec2d::default(), Vec2d::default()];
-    let mut nInsideTexCount: i32 = 0;
+    let mut n_inside_tex_count: i32 = 0;
 
     let mut outside_tex: [Vec2d; 3] = [Vec2d::default(), Vec2d::default(), Vec2d::default()];
-    let mut nOutsideTexCount: i32 = 0;
+    let mut n_outside_tex_count: i32 = 0;
 
-    let d0: f32 = dist(&in_tri.points[0], &plane_n, &plane_p);
-    let d1: f32 = dist(&in_tri.points[1], &plane_n, &plane_p);
-    let d2: f32 = dist(&in_tri.points[2], &plane_n, &plane_p);
+    let d0: f32 = dist(&in_tri.points[0], &plane_n, plane_p);
+    let d1: f32 = dist(&in_tri.points[1], &plane_n, plane_p);
+    let d2: f32 = dist(&in_tri.points[2], &plane_n, plane_p);
 
-    if (d0 >= 0.0) {
-        inside_points[(nInsidePointCount as usize)] = in_tri.points[0].clone();
-        nInsidePointCount += 1;
-        inside_tex[(nInsideTexCount as usize)] = in_tri.texture_points[0].clone();
-        nInsideTexCount += 1;
+    if d0 >= 0.0 {
+        inside_points[n_inside_point_count as usize] = in_tri.points[0].clone();
+        n_inside_point_count += 1;
+        inside_tex[n_inside_tex_count as usize] = in_tri.texture_points[0].clone();
+        n_inside_tex_count += 1;
     } else {
-        outside_points[nOutsidePointCount as usize] = in_tri.points[0].clone();
-        nOutsidePointCount += 1;
-        outside_tex[nOutsideTexCount as usize] = in_tri.texture_points[0].clone();
-        nOutsideTexCount += 1;
+        outside_points[n_outside_point_count as usize] = in_tri.points[0].clone();
+        n_outside_point_count += 1;
+        outside_tex[n_outside_tex_count as usize] = in_tri.texture_points[0].clone();
+        n_outside_tex_count += 1;
     }
-    if (d1 >= 0.0) {
-        inside_points[nInsidePointCount as usize] = in_tri.points[1].clone();
-        nInsidePointCount += 1;
-        inside_tex[(nInsideTexCount as usize)] = in_tri.texture_points[1].clone();
-        nInsideTexCount += 1;
+    if d1 >= 0.0 {
+        inside_points[n_inside_point_count as usize] = in_tri.points[1].clone();
+        n_inside_point_count += 1;
+        inside_tex[n_inside_tex_count as usize] = in_tri.texture_points[1].clone();
+        n_inside_tex_count += 1;
     } else {
-        outside_points[nOutsidePointCount as usize] = in_tri.points[1].clone();
-        nOutsidePointCount += 1;
-        outside_tex[nOutsideTexCount as usize] = in_tri.texture_points[1].clone();
-        nOutsideTexCount += 1;
+        outside_points[n_outside_point_count as usize] = in_tri.points[1].clone();
+        n_outside_point_count += 1;
+        outside_tex[n_outside_tex_count as usize] = in_tri.texture_points[1].clone();
+        n_outside_tex_count += 1;
     }
-    if (d2 >= 0.0) {
-        inside_points[nInsidePointCount as usize] = in_tri.points[2].clone();
-        nInsidePointCount += 1;
-        inside_tex[(nInsideTexCount as usize)] = in_tri.texture_points[2].clone();
-        nInsideTexCount += 1;
+    if d2 >= 0.0 {
+        inside_points[n_inside_point_count as usize] = in_tri.points[2].clone();
+        n_inside_point_count += 1;
+        inside_tex[n_inside_tex_count as usize] = in_tri.texture_points[2].clone();
     } else {
-        outside_points[nOutsidePointCount as usize] = in_tri.points[2].clone();
-        nOutsidePointCount += 1;
-        outside_tex[nOutsideTexCount as usize] = in_tri.texture_points[2].clone();
-        nOutsideTexCount += 1;
+        outside_points[n_outside_point_count as usize] = in_tri.points[2].clone();
+        n_outside_point_count += 1;
+        outside_tex[n_outside_tex_count as usize] = in_tri.texture_points[2].clone();
     }
 
-    if (nInsidePointCount == 0) {
-        return 0; 
+    if n_inside_point_count == 0 {
+        return 0;
     }
 
-    if (nInsidePointCount == 3) {
+    if n_inside_point_count == 3 {
         *out_tri1 = in_tri.clone();
 
-        return 1; 
+        return 1;
     }
 
-    if (nInsidePointCount == 1 && nOutsidePointCount == 2) {
-
+    if n_inside_point_count == 1 && n_outside_point_count == 2 {
         out_tri1.points[0] = inside_points[0].clone();
         out_tri1.texture_points[0] = inside_tex[0].clone();
 
@@ -451,10 +438,10 @@ pub fn triangle_clip_against_plane(
         out_tri1.texture_points[2].v = t * (outside_tex[1].v - inside_tex[0].v) + inside_tex[0].v;
         out_tri1.texture_points[2].w = t * (outside_tex[1].w - inside_tex[0].w) + inside_tex[0].w;
 
-        return 1; 
+        return 1;
     }
 
-    if (nInsidePointCount == 2 && nOutsidePointCount == 1) {
+    if n_inside_point_count == 2 && n_outside_point_count == 1 {
         out_tri1.points[0] = inside_points[0].clone();
         out_tri1.points[1] = inside_points[1].clone();
         out_tri1.texture_points[0] = inside_tex[0].clone();
@@ -487,9 +474,9 @@ pub fn triangle_clip_against_plane(
         out_tri2.texture_points[2].v = t * (outside_tex[0].v - inside_tex[1].v) + inside_tex[1].v;
         out_tri2.texture_points[2].w = t * (outside_tex[0].w - inside_tex[1].w) + inside_tex[1].w;
 
-        return 2; 
+        2
     } else {
-        return 0;
+        0
     }
 }
 
@@ -501,11 +488,11 @@ pub fn vector_intersect_plane(
     t: &mut f32,
 ) -> Vec3d {
     let plane_n = vector_normalize(plane_n_input);
-    let plane_d: f32 = (-vector_dot_product(&plane_n, &plane_p));
+    let plane_d: f32 = -vector_dot_product(&plane_n, plane_p);
     let ad: f32 = vector_dot_product(&line_start, &plane_n);
     let bd: f32 = vector_dot_product(&line_end, &plane_n);
     *t = (-plane_d - ad) / (bd - ad);
     let line_start_to_end: Vec3d = vector_sub(&line_end, &line_start);
     let line_to_intersect: Vec3d = vector_mul(&line_start_to_end, *t);
-    return vector_add(&line_start, &line_to_intersect);
+    vector_add(&line_start, &line_to_intersect)
 }
