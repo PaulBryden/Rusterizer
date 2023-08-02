@@ -12,8 +12,8 @@ use rusterer::geometry::Mesh;
 use minifb::Key;
 use rusterer::renderer::Renderer;
 use rusterer::texture_helper::get_texture_from_bmp;
-const WIDTH: usize = 800;
-const HEIGHT: usize = 600;
+const WIDTH: usize = 1000;
+const HEIGHT: usize = 1000;
 lazy_static!
     {
         static ref MESH_TEXTURE: Texture = get_texture_from_bmp(include_bytes!("../../../demo_objects/floating_islands_demo_texture.bmp"));
