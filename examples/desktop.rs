@@ -1,10 +1,10 @@
 use std::time::Instant;
 
-use rusterizer::framebuffer::Framebuffer;
-use rusterizer::geometry::Mesh;
+use rusterer::framebuffer::Framebuffer;
+use rusterer::geometry::Mesh;
 use minifb::{Key, Window, WindowOptions};
-use rusterizer::renderer::Renderer;
-use rusterizer::texture_helper::get_texture_from_bmp;
+use rusterer::renderer::Renderer;
+use rusterer::texture_helper::get_texture_from_bmp;
 const WIDTH: usize = 480;
 const HEIGHT: usize = 480;
 
