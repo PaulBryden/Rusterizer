@@ -25,6 +25,9 @@ fn main() {
 
     let mut renderer = Renderer::new(mesh_list, animated_mesh_list, WIDTH, HEIGHT, 0x00ace6);
 
+    //Give some perspective for the demo.
+    renderer.translate_camera_y(16.0);
+
     let mut window = Window::new(
         "Render Test - ESC to exit",
         WIDTH,
