@@ -1,12 +1,12 @@
 use std::time::Instant;
 
 use rusterer::framebuffer::Framebuffer;
-use rusterer::geometry::Mesh;
+use rusterer::geometry::{Mesh, AnimatedMesh};
 use minifb::{Key, Window, WindowOptions};
 use rusterer::renderer::Renderer;
 use rusterer::texture_helper::get_texture_from_bmp;
-const WIDTH: usize = 480;
-const HEIGHT: usize = 480;
+const WIDTH: usize = 1600;
+const HEIGHT: usize = 900;
 
 fn main() {
     let mut framebuffer: Framebuffer = Framebuffer::new(WIDTH, HEIGHT);
@@ -14,7 +14,16 @@ fn main() {
     let mut mesh_list: Vec<Mesh> = Vec::new();
     mesh_list.push(Mesh::new(&mesh_texture, include_bytes!("../demo_objects/floating_islands_demo.obj")));
 
-    let mut renderer = Renderer::new(mesh_list, WIDTH, HEIGHT, 0x00ace6);
+    let mut animated_mesh_list: Vec<AnimatedMesh> = Vec::new();
+    let mut animated_mech: Vec<Vec<u8>> = Vec::new();
+    let mech_frame_1 = include_bytes!("../demo_objects/mech/mech1.obj");
+    let mech_frame_2 = include_bytes!("../demo_objects/mech/mech2.obj");
+    let mech_texture = get_texture_from_bmp(include_bytes!("../demo_objects/mech/baked_mech_texture.bmp"));
+    animated_mech.push(mech_frame_1.to_vec());
+    animated_mech.push(mech_frame_2.to_vec());
+    animated_mesh_list.push(AnimatedMesh::new(&mech_texture,animated_mech,3.0, true));
+
+    let mut renderer = Renderer::new(mesh_list, animated_mesh_list, WIDTH, HEIGHT, 0x00ace6);
 
     let mut window = Window::new(
         "Render Test - ESC to exit",

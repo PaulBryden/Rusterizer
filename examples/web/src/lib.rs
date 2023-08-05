@@ -9,6 +9,7 @@ use wasm_bindgen::JsCast;
 use lazy_static::lazy_static;
 use rusterer::framebuffer::Framebuffer;
 use rusterer::geometry::Mesh;
+use rusterer::geometry::AnimatedMesh;
 use minifb::Key;
 use rusterer::renderer::Renderer;
 use rusterer::texture_helper::get_texture_from_bmp;
@@ -17,6 +18,8 @@ const HEIGHT: usize = 1000;
 lazy_static!
     {
         static ref MESH_TEXTURE: Texture = get_texture_from_bmp(include_bytes!("../../../demo_objects/floating_islands_demo_texture.bmp"));
+        static ref MECH_TEXTURE: Texture = get_texture_from_bmp(include_bytes!("../../../demo_objects/mech/baked_mech_texture.bmp"));
+
     }
 
 
@@ -35,11 +38,19 @@ pub fn main() {
     panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     let mut framebuffer: Framebuffer = Framebuffer::new(WIDTH, HEIGHT);
-
     let mut mesh_list: Vec<Mesh> = Vec::new();
     mesh_list.push(Mesh::new(&MESH_TEXTURE, include_bytes!("../../../demo_objects/floating_islands_demo.obj")));
-    framebuffer.clear_buffer_color(&0xffe6ac00);
-    let mut renderer = Renderer::new(mesh_list, WIDTH, HEIGHT, 0xffe6ac00);
+
+    let mut animated_mesh_list: Vec<AnimatedMesh> = Vec::new();
+    let mut animated_mech: Vec<Vec<u8>> = Vec::new();
+    let mech_frame_1 = include_bytes!("../../../demo_objects/mech/mech1.obj");
+    let mech_frame_2 = include_bytes!("../../../demo_objects/mech/mech2.obj");
+    animated_mech.push(mech_frame_1.to_vec());
+    animated_mech.push(mech_frame_2.to_vec());
+    animated_mesh_list.push(AnimatedMesh::new(&MECH_TEXTURE,animated_mech.clone(),3.0, true));
+
+    let mut renderer = Renderer::new(mesh_list, animated_mesh_list.clone(), WIDTH, HEIGHT, 0xffe6ac00);
+
     renderer.render(0.1, &mut framebuffer);
     let mut now = Instant::now();
     let mut window = Window::new(
