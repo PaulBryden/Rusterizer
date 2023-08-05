@@ -8,12 +8,13 @@ use crate::{
         matrix_make_rotation_z, matrix_make_translation, matrix_multiply_matrix,
         matrix_multiply_vector, matrix_point_at, matrix_quick_inverse, triangle_clip_against_plane,
         vector_add, vector_cross_product, vector_div, vector_dot_product, vector_mul, vector_sub,
-        Mat4x4, Mesh, Triangle, Vec3d,
+        Mat4x4, Mesh, Triangle, Vec3d, AnimatedMesh,
     },
 };
 
 pub struct Renderer<'a> {
     meshes: Vec<Mesh<'a>>,
+    animated_meshes: Vec<AnimatedMesh<'a>>,
     view_width: usize,
     view_height: usize,
     framebuffer_clear_color: u32,
@@ -27,12 +28,13 @@ pub struct Renderer<'a> {
 }
 
 impl Renderer<'_> {
-    pub fn new(
-        meshes: Vec<Mesh>,
+    pub fn new<'a>(
+        meshes: Vec<Mesh<'a>>,
+        animated_meshes: Vec<AnimatedMesh<'a>>,
         view_width: usize,
         view_height: usize,
         framebuffer_clear_color: u32,
-    ) -> Renderer {
+    ) -> Renderer<'a> {
         //For first draft lets make some defaults for the projection matrix.
         let mat_projection =
             matrix_make_projection(90.0, view_height as f32 / view_width as f32, 0.1, 1000.0);
@@ -49,6 +51,7 @@ impl Renderer<'_> {
         let depth_buffer: Vec<f32> = vec![0.0; view_width * view_height];
         Renderer {
             meshes,
+            animated_meshes,
             view_width,
             view_height,
             framebuffer_clear_color,
@@ -80,13 +83,18 @@ impl Renderer<'_> {
         self.vec_camera = vector_sub(&self.vec_camera, &vec_backward);
     }
 
-    pub fn render(&mut self, _time_elapsed: f32, framebuffer: &mut Framebuffer) {
+    pub fn render(&mut self, time_elapsed: f32, framebuffer: &mut Framebuffer) {
         //Clear the depth buffer and frame buffer for pixel rendering
         for i in 0..self.view_width * self.view_height {
             self.depth_buffer[i] = 0.0;
         }
 
         framebuffer.clear_buffer_color(&self.framebuffer_clear_color);
+
+        for i in 0..self.animated_meshes.len()
+        {
+            self.animated_meshes.get_mut(i).unwrap().tick(time_elapsed);
+        }
 
         let mat_rot_z: Mat4x4 = matrix_make_rotation_z(&(0.0));
         let mat_rot_x: Mat4x4 = matrix_make_rotation_x(&0.0);
@@ -115,7 +123,15 @@ impl Renderer<'_> {
 
         let mat_view: Mat4x4 = matrix_quick_inverse(&mat_camera);
 
-        for mesh in self.meshes.iter() {
+        let mut render_list: Vec<Mesh<'_>> = self.meshes.clone();     
+
+        for i in 0..self.animated_meshes.len()
+        {
+            render_list.push(self.animated_meshes.get(i).unwrap().current_frame.clone());
+        }
+        
+
+        for mesh in render_list.iter() {
             let mut vec_triangles_to_raster: Vec<Triangle> = Vec::new();
             for tri in mesh.tris.iter() {
                 let mut tri_projected: Triangle = Triangle::default();

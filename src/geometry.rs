@@ -47,6 +47,76 @@ pub struct Mesh<'a> {
     pub texture: &'a Texture,
 }
 
+#[derive(Clone)]
+pub struct AnimatedMesh<'a> {
+    pub meshes: Vec<Mesh<'a>>,
+    pub texture: &'a Texture,
+    pub current_frame: Mesh<'a>,
+    pub frames_per_second: f32,
+    pub running: bool,
+    current_frame_numeric: f32,
+}
+
+impl AnimatedMesh<'_> {
+    pub fn new<'a>(tex: &'a Texture, files: Vec<Vec<u8>>, fps: f32, running: bool) -> AnimatedMesh<'a> {
+        let mut meshes: Vec<Mesh<'a>> = Vec::new();
+        let running = running;
+        files.into_iter().for_each(|i| {
+            let mut mesh = Mesh {
+                tris: Vec::new(),
+                texture: tex,
+            };
+            mesh.load_from_object_file(&i, true);
+            meshes.push(mesh.clone());
+        });
+        let current_frame = meshes.get(0).unwrap().clone();
+        AnimatedMesh{meshes:meshes, texture:tex, current_frame:current_frame, frames_per_second:fps, running:running, current_frame_numeric:0.0}
+    }
+
+    pub fn tick(&mut self, mut time_elapsed_seconds: f32)
+    {
+        let interpolation_factor = self.frames_per_second*time_elapsed_seconds;
+        let total_number_of_frames:usize = self.meshes.len();
+        let mut new_frame_time = self.current_frame_numeric+interpolation_factor;
+        while(new_frame_time>=total_number_of_frames as f32)
+        {
+            new_frame_time=0.0+time_elapsed_seconds;
+            time_elapsed_seconds-=new_frame_time;
+        }
+        let base_frame = new_frame_time.floor() as usize;
+        let mut next_frame = base_frame+1;
+        if (next_frame>=total_number_of_frames)
+        {
+            next_frame = 0;
+        }
+        let interpolation_amount = new_frame_time-new_frame_time.floor();
+        let mut current_frame_mesh: Mesh<'_>=self.meshes.get(base_frame).unwrap().clone();
+        let mut next_frame_mesh=self.meshes.get(next_frame).unwrap().clone();
+
+        for i in 0..current_frame_mesh.tris.len()
+        {
+            for j  in 0..3
+            {
+                let mut x_diff = next_frame_mesh.tris.get_mut(i).unwrap().points[j].x-current_frame_mesh.tris.get_mut(i).unwrap().points[j].x;
+                let mut y_diff = next_frame_mesh.tris.get_mut(i).unwrap().points[j].y-current_frame_mesh.tris.get_mut(i).unwrap().points[j].y;
+                let mut z_diff = next_frame_mesh.tris.get_mut(i).unwrap().points[j].z-current_frame_mesh.tris.get_mut(i).unwrap().points[j].z;
+
+                x_diff = x_diff*interpolation_amount;
+                y_diff = y_diff*interpolation_amount;
+                z_diff = z_diff*interpolation_amount;
+
+                current_frame_mesh.tris.get_mut(i).unwrap().points[j].x += x_diff;
+                current_frame_mesh.tris.get_mut(i).unwrap().points[j].y += y_diff;
+                current_frame_mesh.tris.get_mut(i).unwrap().points[j].z += z_diff;
+
+            }
+        }
+        self.current_frame=current_frame_mesh;
+        self.current_frame_numeric=new_frame_time;
+
+    }
+}
+
 #[derive(Default, Debug, Clone)]
 pub struct Mat4x4 {
     pub m: [[f32; 4]; 4],
