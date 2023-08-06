@@ -16,17 +16,22 @@ fn main() {
 
     let mut animated_mesh_list: Vec<AnimatedMesh> = Vec::new();
     let mut animated_mech: Vec<Vec<u8>> = Vec::new();
-    let mech_frame_1 = include_bytes!("../demo_objects/mech/mech1.obj");
-    let mech_frame_2 = include_bytes!("../demo_objects/mech/mech2.obj");
-    let mech_texture = get_texture_from_bmp(include_bytes!("../demo_objects/mech/baked_mech_texture.bmp"));
-    animated_mech.push(mech_frame_1.to_vec());
-    animated_mech.push(mech_frame_2.to_vec());
-    animated_mesh_list.push(AnimatedMesh::new(&mech_texture,animated_mech,3.0, true));
+    let human_frame_1 = include_bytes!("../demo_objects/low_poly_human/low_poly_human1.obj");
+    let human_frame_2 = include_bytes!("../demo_objects/low_poly_human/low_poly_human2.obj");
+    let human_frame_3 = include_bytes!("../demo_objects/low_poly_human/low_poly_human3.obj");
+    let human_frame_4 = include_bytes!("../demo_objects/low_poly_human/low_poly_human4.obj");
+    let human_texture = get_texture_from_bmp(include_bytes!("../demo_objects/low_poly_human/low_poly_human_texture.bmp"));
+    animated_mech.push(human_frame_1.to_vec());
+    animated_mech.push(human_frame_2.to_vec());    
+    animated_mech.push(human_frame_3.to_vec());
+    animated_mech.push(human_frame_4.to_vec());
+    animated_mesh_list.push(AnimatedMesh::new(&human_texture,animated_mech,5.0, true));
 
     let mut renderer = Renderer::new(mesh_list, animated_mesh_list, WIDTH, HEIGHT, 0x00ace6);
 
     //Give some perspective for the demo.
-    renderer.translate_camera_y(16.0);
+    renderer.translate_camera_y(20.0);
+    renderer.translate_camera_backward(75.0,1.0);
 
     let mut window = Window::new(
         "Render Test - ESC to exit",

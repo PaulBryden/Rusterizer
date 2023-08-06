@@ -18,7 +18,7 @@ const HEIGHT: usize = 1000;
 lazy_static!
     {
         static ref MESH_TEXTURE: Texture = get_texture_from_bmp(include_bytes!("../../../demo_objects/floating_islands_demo_texture.bmp"));
-        static ref MECH_TEXTURE: Texture = get_texture_from_bmp(include_bytes!("../../../demo_objects/mech/baked_mech_texture.bmp"));
+        static ref MECH_TEXTURE: Texture = get_texture_from_bmp(include_bytes!("../../../demo_objects/low_poly_human/low_poly_human_texture.bmp"));
 
     }
 
@@ -42,17 +42,22 @@ pub fn main() {
     mesh_list.push(Mesh::new(&MESH_TEXTURE, include_bytes!("../../../demo_objects/floating_islands_demo.obj")));
 
     let mut animated_mesh_list: Vec<AnimatedMesh> = Vec::new();
-    let mut animated_mech: Vec<Vec<u8>> = Vec::new();
-    let mech_frame_1 = include_bytes!("../../../demo_objects/mech/mech1.obj");
-    let mech_frame_2 = include_bytes!("../../../demo_objects/mech/mech2.obj");
-    animated_mech.push(mech_frame_1.to_vec());
-    animated_mech.push(mech_frame_2.to_vec());
-    animated_mesh_list.push(AnimatedMesh::new(&MECH_TEXTURE,animated_mech.clone(),3.0, true));
+    let mut animated_human: Vec<Vec<u8>> = Vec::new();
+    let human_frame_1 = include_bytes!("../../../demo_objects/low_poly_human/low_poly_human1.obj");
+    let human_frame_2 = include_bytes!("../../../demo_objects/low_poly_human/low_poly_human2.obj");
+    let human_frame_3 = include_bytes!("../../../demo_objects/low_poly_human/low_poly_human3.obj");
+    let human_frame_4 = include_bytes!("../../../demo_objects/low_poly_human/low_poly_human4.obj");
+    animated_human.push(human_frame_1.to_vec());
+    animated_human.push(human_frame_2.to_vec());
+    animated_human.push(human_frame_3.to_vec());
+    animated_human.push(human_frame_4.to_vec());
+    animated_mesh_list.push(AnimatedMesh::new(&MECH_TEXTURE,animated_human.clone(),5.0, true));
 
     let mut renderer = Renderer::new(mesh_list, animated_mesh_list.clone(), WIDTH, HEIGHT, 0xffe6ac00);
     
     //Give some perspective for the demo.
-    renderer.translate_camera_y(16.0);
+    renderer.translate_camera_y(20.0);
+    renderer.translate_camera_backward(75.0,1.0);
 
     renderer.render(0.1, &mut framebuffer);
     let mut now = Instant::now();
