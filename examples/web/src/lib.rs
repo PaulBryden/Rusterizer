@@ -56,7 +56,7 @@ pub fn main() {
     let mut renderer = Renderer::new(mesh_list, animated_mesh_list.clone(), WIDTH, HEIGHT, 0xffe6ac00);
     
     //Give some perspective for the demo.
-    renderer.translate_camera_y(20.0);
+    renderer.translate_camera_y(-12.0);
     renderer.translate_camera_backward(75.0,1.0);
 
     renderer.render(0.1, &mut framebuffer);

@@ -30,7 +30,7 @@ fn main() {
     let mut renderer = Renderer::new(mesh_list, animated_mesh_list, WIDTH, HEIGHT, 0x00ace6);
 
     //Give some perspective for the demo.
-    renderer.translate_camera_y(20.0);
+    renderer.translate_camera_y(-12.0);
     renderer.translate_camera_backward(75.0,1.0);
 
     let mut window = Window::new(
