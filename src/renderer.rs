@@ -39,8 +39,18 @@ impl Renderer<'_> {
         let mat_projection =
             matrix_make_projection(90.0, view_height as f32 / view_width as f32, 0.1, 1000.0);
         let vec_camera: Vec3d = Vec3d::default();
-        let vec_target: Vec3d = Vec3d::default();
-        let vec_look_dir: Vec3d = Vec3d::default();
+        let vec_target: Vec3d = Vec3d {
+            x: 0.0,
+            y: 0.0,
+            z: 1.0,
+            ..Default::default()
+        };
+        let vec_look_dir: Vec3d = Vec3d {
+            x: 0.0,
+            y: 0.0,
+            z: 1.0,
+            ..Default::default()
+        };
         let vec_up: Vec3d = Vec3d {
             x: 0.0,
             y: 1.0,
