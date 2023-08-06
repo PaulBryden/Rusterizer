@@ -1,5 +1,7 @@
 use crate::{framebuffer::Framebuffer, texture::Texture};
 
+/// A function for drawing a 2d line between (X0,Y0) and (X1,Y1).
+/// A framebuffer for output and a line color are expected as well.
 pub fn draw_line(
     x0_param: i32,
     y0_param: i32,
@@ -45,6 +47,9 @@ pub fn draw_line(
     }
 }
 
+/// A function for filling a triangle with a textureand outputing the result to a framebuffer.
+/// A depth buffer is also required to ensure pixels in the foreground aren't covered by pixels
+/// in the background.
 pub fn draw_textured_triangle(
     x1_param: i64,
     y1_param: i64,

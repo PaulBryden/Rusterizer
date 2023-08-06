@@ -12,6 +12,8 @@ use crate::{
     },
 };
 
+/// A Renderer object. This is the object responsible for performing the geometric calculations
+/// to output a 2d frame of the 3D environment passed in via the mesh lists.
 pub struct Renderer<'a> {
     meshes: Vec<Mesh<'a>>,
     animated_meshes: Vec<AnimatedMesh<'a>>,
@@ -28,6 +30,8 @@ pub struct Renderer<'a> {
 }
 
 impl Renderer<'_> {
+    
+    /// Creates a new `Renderer`.
     pub fn new<'a>(
         meshes: Vec<Mesh<'a>>,
         animated_meshes: Vec<AnimatedMesh<'a>>,
@@ -75,24 +79,31 @@ impl Renderer<'_> {
         }
     }
 
+    /// Translates the renderer camera yaw by 'yaw_adjustment'
     pub fn translate_yaw(&mut self, yaw_adjustment: f32) {
         self.yaw += yaw_adjustment;
     }
+    
+    /// Translates the renderer camera yaw by 'x_adjustment'
     pub fn translate_camera_x(&mut self, x_adjustment: f32) {
         self.vec_camera.x += x_adjustment;
     }
+    /// Translates the renderer camera yaw by 'y_adjustment'
     pub fn translate_camera_y(&mut self, y_adjustment: f32) {
         self.vec_camera.y += y_adjustment;
     }
+    /// Translates the renderer camera forward location by 'forward_adjustment' * 'time_elapsed'
     pub fn translate_camera_forward(&mut self, forward_adjustment: f32, time_elapsed: f32) {
         let vec_forward = vector_mul(&self.vec_look_dir, forward_adjustment * time_elapsed);
         self.vec_camera = vector_add(&self.vec_camera, &vec_forward);
     }
+    /// Translates the renderer camera backward location by 'backward_adjustment' * 'time_elapsed'
     pub fn translate_camera_backward(&mut self, backward_adjustment: f32, time_elapsed: f32) {
         let vec_backward = vector_mul(&self.vec_look_dir, backward_adjustment * time_elapsed);
         self.vec_camera = vector_sub(&self.vec_camera, &vec_backward);
     }
 
+    /// Performs the render function, translating the world meshes and camera location into a 2D frame.
     pub fn render(&mut self, time_elapsed: f32, framebuffer: &mut Framebuffer) {
         //Clear the depth buffer and frame buffer for pixel rendering
         for i in 0..self.view_width * self.view_height {

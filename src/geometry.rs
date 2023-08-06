@@ -1,5 +1,6 @@
 use std::f32::consts::PI;
 
+/// A 3D vector object with a W component, normalized and set to 1.0 by default.
 #[derive(Debug, Clone)]
 pub struct Vec3d {
     pub x: f32,
@@ -20,6 +21,7 @@ impl Default for Vec3d {
 
 use crate::texture::Texture;
 
+/// A 2D vector object with a W component, normalized and set to 1.0 by default.
 #[derive(Debug, Clone)]
 pub struct Vec2d {
     pub u: f32,
@@ -35,18 +37,21 @@ impl Default for Vec2d {
         }
     }
 }
+/// A Triangle object holding 3 Vec3d coordinates and 3 Vec2d texture coordinates.
 #[derive(Default, Debug, Clone)]
 pub struct Triangle {
     pub points: [Vec3d; 3],
     pub texture_points: [Vec2d; 3],
 }
 
+/// A Mesh object holding a vector of Triangle objects and a reference to a texture.
 #[derive(Clone)]
 pub struct Mesh<'a> {
     pub tris: Vec<Triangle>,
     pub texture: &'a Texture,
 }
 
+/// An Animated Mesh object holding a vector of keyframe meshes and a reference to a texture.
 #[derive(Clone)]
 pub struct AnimatedMesh<'a> {
     pub meshes: Vec<Mesh<'a>>,
@@ -58,6 +63,7 @@ pub struct AnimatedMesh<'a> {
 }
 
 impl AnimatedMesh<'_> {
+    /// Creates a new `AnimatedMesh`.
     pub fn new<'a>(tex: &'a Texture, files: Vec<Vec<u8>>, fps: f32, running: bool) -> AnimatedMesh<'a> {
         let mut meshes: Vec<Mesh<'a>> = Vec::new();
         let running = running;
@@ -73,19 +79,20 @@ impl AnimatedMesh<'_> {
         AnimatedMesh{meshes:meshes, texture:tex, current_frame:current_frame, frames_per_second:fps, running:running, current_frame_numeric:0.0}
     }
 
+    /// Interpolates the 'current_frame' object based on the 'time_elapsed_seconds'.
     pub fn tick(&mut self, mut time_elapsed_seconds: f32)
     {
         let interpolation_factor = self.frames_per_second*time_elapsed_seconds;
         let total_number_of_frames:usize = self.meshes.len();
         let mut new_frame_time = self.current_frame_numeric+interpolation_factor;
-        while(new_frame_time>=total_number_of_frames as f32)
+        while new_frame_time>=total_number_of_frames as f32
         {
             new_frame_time=0.0+time_elapsed_seconds;
             time_elapsed_seconds-=new_frame_time;
         }
         let base_frame = new_frame_time.floor() as usize;
         let mut next_frame = base_frame+1;
-        if (next_frame>=total_number_of_frames)
+        if next_frame>=total_number_of_frames
         {
             next_frame = 0;
         }
@@ -117,12 +124,14 @@ impl AnimatedMesh<'_> {
     }
 }
 
+/// A 4x4 matrix object.
 #[derive(Default, Debug, Clone)]
 pub struct Mat4x4 {
     pub m: [[f32; 4]; 4],
 }
 
 impl Mesh<'_> {
+    /// Creates a new 'Mesh' Object
     pub fn new<'a>(tex: &'a Texture, file: &'a [u8]) -> Mesh<'a> {
         let mut mesh = Mesh {
             tris: Vec::new(),
@@ -132,6 +141,7 @@ impl Mesh<'_> {
         mesh
     }
 
+    /// Reads the obj data into a Vector containing lines.
     fn read_lines_from_file(file: &[u8]) -> Vec<String> {
         let mut result = Vec::new();
         for line in std::io::read_to_string(file).unwrap().lines() {
@@ -140,6 +150,7 @@ impl Mesh<'_> {
         result
     }
 
+    /// Populate the mesh object with vertices and texture coordinates from the obj file.
     pub fn load_from_object_file(&mut self, file: &[u8], b_has_texture: bool) {
         let mut verts: Vec<Vec3d> = Vec::new();
         let mut texs: Vec<Vec2d> = Vec::new();
@@ -209,6 +220,7 @@ impl Mesh<'_> {
     }
 }
 
+/// Multiply a 'Mat4x4' by a 'Vec3d'.
 pub fn matrix_multiply_vector(m: &Mat4x4, i: &Vec3d) -> Vec3d {
     let mut v: Vec3d = Vec3d::default();
     v.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + i.w * m.m[3][0];
@@ -218,6 +230,7 @@ pub fn matrix_multiply_vector(m: &Mat4x4, i: &Vec3d) -> Vec3d {
     v
 }
 
+/// Return a 'Mat4x4' identity matrix.
 pub fn matrix_make_identity() -> Mat4x4 {
     let mut matrix: Mat4x4 = Mat4x4::default();
     matrix.m[0][0] = 1.0;
@@ -227,6 +240,7 @@ pub fn matrix_make_identity() -> Mat4x4 {
     matrix
 }
 
+/// Return a 'Mat4x4' x rotation matrix based on input angle 'f_angle_rad'.
 pub fn matrix_make_rotation_x(f_angle_rad: &f32) -> Mat4x4 {
     let mut matrix: Mat4x4 = Mat4x4::default();
     matrix.m[0][0] = 1.0;
@@ -238,6 +252,7 @@ pub fn matrix_make_rotation_x(f_angle_rad: &f32) -> Mat4x4 {
     matrix
 }
 
+/// Return a 'Mat4x4' y rotation matrix based on input angle 'f_angle_rad'.
 pub fn matrix_make_rotation_y(f_angle_rad: &f32) -> Mat4x4 {
     let mut matrix: Mat4x4 = Mat4x4::default();
     matrix.m[0][0] = f_angle_rad.cos();
@@ -249,6 +264,7 @@ pub fn matrix_make_rotation_y(f_angle_rad: &f32) -> Mat4x4 {
     matrix
 }
 
+/// Return a 'Mat4x4' z rotation matrix based on input angle 'f_angle_rad'.
 pub fn matrix_make_rotation_z(f_angle_rad: &f32) -> Mat4x4 {
     let mut matrix: Mat4x4 = Mat4x4::default();
     matrix.m[0][0] = f_angle_rad.cos();
@@ -260,6 +276,7 @@ pub fn matrix_make_rotation_z(f_angle_rad: &f32) -> Mat4x4 {
     matrix
 }
 
+/// Return a 'Mat4x4' translation matrix based on inputs 'x', 'y' and 'z'.
 pub fn matrix_make_translation(x: f32, y: f32, z: f32) -> Mat4x4 {
     let mut matrix: Mat4x4 = matrix_make_identity();
     matrix.m[3][0] = x;
@@ -268,6 +285,7 @@ pub fn matrix_make_translation(x: f32, y: f32, z: f32) -> Mat4x4 {
     matrix
 }
 
+/// Return a 'Mat4x4' projection matrix based on the viewport parameters.
 pub fn matrix_make_projection(
     f_fov_degrees: f32,
     f_aspect_ratio: f32,
@@ -285,6 +303,7 @@ pub fn matrix_make_projection(
     matrix
 }
 
+/// Multiply a 'Mat4x4' matrix by a 'Mat4x4' matrix.
 pub fn matrix_multiply_matrix(m1: &Mat4x4, m2: &Mat4x4) -> Mat4x4 {
     let mut matrix: Mat4x4 = Mat4x4::default();
     for c in 0..matrix.m.len() {
@@ -298,6 +317,7 @@ pub fn matrix_multiply_matrix(m1: &Mat4x4, m2: &Mat4x4) -> Mat4x4 {
     matrix
 }
 
+/// Return an aptly named point_at matrix for translating between a position and a target.
 pub fn matrix_point_at(pos: &Vec3d, target: &Vec3d, up: &Vec3d) -> Mat4x4 {
     let mut new_forward: Vec3d = vector_sub(target, pos);
     new_forward = vector_normalize(&new_forward);
@@ -328,6 +348,7 @@ pub fn matrix_point_at(pos: &Vec3d, target: &Vec3d, up: &Vec3d) -> Mat4x4 {
     matrix
 }
 
+/// Quickly invert a 'Mat4x4' matrix.
 pub fn matrix_quick_inverse(m: &Mat4x4) -> Mat4x4 {
     let mut matrix: Mat4x4 = Mat4x4::default();
     matrix.m[0][0] = m.m[0][0];
@@ -352,6 +373,7 @@ pub fn matrix_quick_inverse(m: &Mat4x4) -> Mat4x4 {
     matrix
 }
 
+/// Add a 'Vec3d' to a 'Vec3d'.
 pub fn vector_add(v1: &Vec3d, v2: &Vec3d) -> Vec3d {
     let mut v_result = Vec3d::default();
     v_result.x = v1.x + v2.x;
@@ -360,6 +382,7 @@ pub fn vector_add(v1: &Vec3d, v2: &Vec3d) -> Vec3d {
     v_result
 }
 
+/// Subtract a 'Vec3d' from a 'Vec3d'.
 pub fn vector_sub(v1: &Vec3d, v2: &Vec3d) -> Vec3d {
     let mut v_result = Vec3d::default();
     v_result.x = v1.x - v2.x;
@@ -368,6 +391,7 @@ pub fn vector_sub(v1: &Vec3d, v2: &Vec3d) -> Vec3d {
     v_result
 }
 
+/// Multiply a 'Vec3d' by a constant 'k'
 pub fn vector_mul(v1: &Vec3d, k: f32) -> Vec3d {
     let mut v_result = Vec3d::default();
     v_result.x = v1.x * k;
@@ -376,6 +400,7 @@ pub fn vector_mul(v1: &Vec3d, k: f32) -> Vec3d {
     v_result
 }
 
+/// Divide a 'Vec3d' by a constant 'k'
 pub fn vector_div(v1: &Vec3d, k: f32) -> Vec3d {
     let mut v_result = Vec3d::default();
     v_result.x = v1.x / k;
@@ -384,12 +409,17 @@ pub fn vector_div(v1: &Vec3d, k: f32) -> Vec3d {
     v_result
 }
 
+/// Calculate the dot product of 2 'Vec3d' objects.
 pub fn vector_dot_product(v1: &Vec3d, v2: &Vec3d) -> f32 {
     v1.x * v2.x + v1.y * v2.y + v1.z * v2.z
 }
+
+/// Calculate the length of a 'Vec3d' object.
 pub fn vector_length(v1: &Vec3d) -> f32 {
     vector_dot_product(v1, v1).sqrt()
 }
+
+/// Normalize a 'Vec3d' object.
 pub fn vector_normalize(v: &Vec3d) -> Vec3d {
     let l: f32 = vector_length(v);
     Vec3d {
@@ -400,6 +430,7 @@ pub fn vector_normalize(v: &Vec3d) -> Vec3d {
     }
 }
 
+/// Calculate the cross product of 2 'Vec3d' objects
 pub fn vector_cross_product(v1: &Vec3d, v2: &Vec3d) -> Vec3d {
     let mut v: Vec3d = Vec3d::default();
     v.x = v1.y * v2.z - v1.z * v2.y;
@@ -409,11 +440,14 @@ pub fn vector_cross_product(v1: &Vec3d, v2: &Vec3d) -> Vec3d {
     v
 }
 
+/// Calculate the distance between 2 'Vec3d' objects
 pub fn dist(p: &Vec3d, plane_n: &Vec3d, plane_p: &Vec3d) -> f32 {
     let _n: Vec3d = vector_normalize(p);
     plane_n.x * p.x + plane_n.y * p.y + plane_n.z * p.z - vector_dot_product(plane_n, plane_p)
 }
 
+/// Clip a 'Triangle' object against a plane 'Vec3d' object. This function returns up to 2 new 'Triangle'
+/// objects based on the result of the clipping operation.
 pub fn triangle_clip_against_plane(
     plane_p: &Vec3d,
     plane_n_input: &Vec3d,
@@ -550,6 +584,7 @@ pub fn triangle_clip_against_plane(
     }
 }
 
+/// Get the 'Vec3d' at point of intersection. Also return 't' for calculating the new texture coordinates.
 pub fn vector_intersect_plane(
     plane_p: &Vec3d,
     plane_n_input: &Vec3d,
