@@ -4,7 +4,7 @@ use tinybmp::Bmp;
 
 use crate::texture::Texture;
 
-/// Creates a new 'Texture' object from a BMP file.
+/// Creates a new Texture object from a BMP file.
 pub fn get_texture_from_bmp(bmp_bytes: &[u8]) -> Texture {
     let mut texture: Texture;
     let bmp = Bmp::<Rgb888>::from_slice(bmp_bytes).unwrap();

@@ -7,7 +7,7 @@ pub struct Framebuffer {
 }
 
 impl Framebuffer {
-    /// Creates a new 'Framebuffer" object with a width and height.
+    /// Creates a new 'Framebuffer' object with a width and height.
     pub fn new(width: usize, height: usize) -> Self {
         let buffer: Vec<u32> = vec![0; width * height];
 

@@ -13,7 +13,7 @@ use crate::{
 };
 
 /// A Renderer object. This is the object responsible for performing the geometric calculations
-/// to output a 2d frame of the 3D environment passed in via the mesh lists.
+/// to output a 2d camera perspective of the 3D environment passed in via the mesh lists.
 pub struct Renderer<'a> {
     meshes: Vec<Mesh<'a>>,
     animated_meshes: Vec<AnimatedMesh<'a>>,
