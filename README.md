@@ -1,5 +1,5 @@
 ﻿# rusterer
-A 3D software renderer and rasterizer written in Rust.
+A fast and simple, zero-dependency 3D renderer library, written in rust, that runs on the CPU.
 
 To build the sample app and run on it on the desktop:
 ```

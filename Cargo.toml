@@ -3,6 +3,12 @@ name = "rusterer"
 version = "0.1.0"
 edition = "2021"
 authors = ["Paul Bryden"]
+license = "MIT"
+license-file = "LICENSE.txt"
+keywords = ["gamedev", "graphics", "3D", "renderer", "WASM"]
+homepage = "https://github.com/PaulBryden/rusterer"
+repository = "https://github.com/PaulBryden/rusterer"
+description = "A fast and simple, zero-dependency 3D renderer library that runs on the CPU."
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
