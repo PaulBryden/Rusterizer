@@ -1,6 +1,6 @@
 //! A fast and simple, zero-dependency 3D renderer library that runs on the CPU.
 //!
-//! Can be compiled for any platform that supports the rust std Library.
+//! Can be compiled for any platform that supports the rust std library.
 //! 
 //! See a demo here:
 //! 

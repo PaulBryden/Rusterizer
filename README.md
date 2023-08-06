@@ -33,3 +33,10 @@ Use the WASD and the UP and DOWN arrows to navigate the environment.
 A simplified design diagram of the rendering engine can be seen below: 
 
 ![alt text](./Rendering_Engine_Architecture.jpg)
+
+
+### Inspiration:
+
+[1] https://github.com/OneLoneCoder/olcPixelGameEngine 
+
+[2] http://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html 
